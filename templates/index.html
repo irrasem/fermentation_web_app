@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор ферментации</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 22px;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 { color: #333; }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+        }
+        input {
+            font-size: 16px;
+            padding: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #008CBA;
+            color: white;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background-color: #005f75; }
+        .result { margin-top: 20px; font-size: 22px; color: #444; }
+        .chart { margin-top: 20px; }
+        .control-points { margin-top: 30px; font-size: 20px; color: #444; }
+        table {
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+        }
+        table, th, td { border: 1px solid #333; }
+        th, td { padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Калькулятор ферментации</h2>
+    <form method="POST">
+        <label for="substrate_concentration">Концентрация субстрата (г/л):</label>
+        <input type="number" step="any" name="substrate_concentration" required>
+        <label for="flow_rate">Скорость подачи (л/ч):</label>
+        <input type="number" step="any" name="flow_rate" required>
+        <label for="mu_max">Максимальная скорость роста (1/ч):</label>
+        <input type="number" step="any" name="mu_max" required>
+        <label for="Ks">Константа насыщения (г/л):</label>
+        <input type="number" step="any" name="Ks" required>
+        <label for="Yxs">Выход биомассы на субстрат (г/г):</label>
+        <input type="number" step="any" name="Yxs" required>
+        <label for="V">Объём реактора (л):</label>
+        <input type="number" step="any" name="V" value="10" required>
+        <button type="submit">Рассчитать</button>
+    </form>
+    {% if result %}
+        <div class="result">
+            <h3>{{ result }}</h3>
+        </div>
+    {% endif %}
+    {% if plot_url_biomass %}
+        <div class="chart">
+            <h3>График роста биомассы:</h3>
+            <img src="data:image/png;base64,{{ plot_url_biomass }}" alt="График биомассы">
+        </div>
+    {% endif %}
+    {% if plot_url_substrate %}
+        <div class="chart">
+            <h3>График изменения концентрации субстрата:</h3>
+            <img src="data:image/png;base64,{{ plot_url_substrate }}" alt="График субстрата">
+        </div>
+    {% endif %}
+    {% if control_points %}
+        <div class="control-points">
+            <h3>Контрольные точки (концентрация субстрата и биомассы):</h3>
+            <table>
+                <tr>
+                    <th>Время (часы)</th>
+                    <th>Концентрация субстрата (г/л)</th>
+                    <th>Концентрация биомассы (г/л)</th>
+                </tr>
+                {% for t, S, X in control_points %}
+                    <tr>
+                        <td>{{ t }}</td>
+                        <td>{{ S }}</td>
+                        <td>{{ X }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+</body>
+</html>
